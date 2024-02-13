@@ -1,0 +1,95 @@
+*Returns all data in the seasons table: /api/seasons*
+
+select
+  *
+from
+  seasons;
+
+*Returns all the data in the circuits table: /api/circuits*
+
+select
+  *
+from
+  circuits;
+
+*Returns the specified circuit (circuitRef column): api/circuits/:ref*
+select
+  *
+from
+  circuits
+where
+  "circuitRef" = 'monza'
+
+*Returns the circuits used in a given season (year from seasons*) ordered by round and in ascending order: /api/circuits/season/:year*
+select
+  circuits.*
+from
+  circuits
+  join races on circuits."circuitId" = races."circuitId"
+  join seasons on races.year = seasons.year
+where
+  seasons.year = 2020
+order by
+  races.round asc;
+
+*Returns all constructor data: /api/constructors*
+
+select
+  *
+from
+  constructors;
+
+*Returns a specified construct (constructorRef coloum): /api/constructors/:ref*
+
+select
+  *
+from
+  constructors
+where
+  "constructorRef" = 'ferrari';
+
+*Returns all constructors within a given season and year: /api/constructors/season/:year*
+
+select
+  c.*
+from
+  constructors c
+  join results r on c."constructorId" = r."constructorId"
+  join races ra on r."raceId" = ra."raceId"
+  join seasons s on ra.year = s.year
+where
+  s.year = 2022;
+
+*Returns all driver data: /api/drivers*
+
+*Return just the specified driver (driverRef column): /api/drivers/:driverRef*
+
+*Return the drivers whose surname (case-insensitive) begins with the provided substring: /api/drivers/search/:substring*
+
+*Returns the drivers within a given season: /api/drivers/season/:year*
+
+*Returns the drivers within a given race: /api/drivers/race/:raceId*
+
+*Returns the specided race, don't include foreign key, only show circuit name, location, and country: /api/races/:raceId*
+
+*Returns the races within a season ordered by round: /api/races/season/:year*
+
+*Returns a specific race within a season specified by the round number: /api/season/:year/:round*
+
+*Returns all the races for a given circuit (circuitRef column): /api/races/circuit/:circuitRef*
+
+*Returns all the races for a given circuit between two years inclusive: /api/races/circuits/:circuitRef/season/:yearStart/:yearEnd*
+
+*Returns the results for a specided race (no foreign keys) provide 
+drivers (driverRef, code, forename, surname), race(name, round,year,date), constructor(name,constructorRef,nationality)
+sort by grid column in ascending order (1st place, 2nd place, etc.): /api/results/:raceId*
+
+*Returns all the results for a given driver: /api/results/driver/:driverRef*
+
+*Return all the results for a given driver within 2 years: /api/results/drivers/:driverRef/seasons/:yearStart/:yearEnd*
+
+*Returns the qualifying results for a specified race: provide same field as the /api/results/:raceId query, sort by postion in ascending: /api/qualifying/:raceId*
+
+*Returns the current season driver standings table fo the specified race sorted by position in ascending order, provide same field as the /api/results/:raceId query: /api/standings/drivers/:raceId*
+
+*Returns the current season constructor standings table for the specified race, sorted by positions in ascending order, provide same field as the /api/results/:raceId query: /api/standings/constructors/:raceId*
