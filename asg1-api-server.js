@@ -4,7 +4,7 @@ const app = express();
 
 const jsonMessage = (msg) => {
     return { message: msg };
- };
+};
 
 const supaUrl = 'https://tnhjiogbryszverqyefr.supabase.co';
 const supaAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRuaGppb2dicnlzenZlcnF5ZWZyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDcxODU4NzYsImV4cCI6MjAyMjc2MTg3Nn0._ALr_YGrUwbVXM7IQ6q9TB8oTWRqa-fTopd7q63w3F8';
@@ -12,7 +12,7 @@ const supaAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS
 const supabase = supa.createClient(supaUrl, supaAnonKey);
 
 app.get('/api/seasons', async (req, res) => {
-    const {data, error} = await supabase
+    const { data, error } = await supabase
         .from('seasons')
         .select()
     if (error) {
@@ -24,7 +24,7 @@ app.get('/api/seasons', async (req, res) => {
 });
 
 app.get('/api/circuits', async (req, res) => {
-    const {data, error} = await supabase
+    const { data, error } = await supabase
         .from('circuits')
         .select()
     if (error) {
@@ -36,15 +36,15 @@ app.get('/api/circuits', async (req, res) => {
 });
 
 app.get('/api/circuits/:circuitRef', async (req, res) => {
-    const {data, error} = await supabase
+    const { data, error } = await supabase
         .from('circuits')
         .select()
         .eq('circuitRef', req.params.circuitRef)
 
-    if(data.length < 1 || data == undefined) {
+    if (data.length < 1 || data == undefined) {
         res.send(jsonMessage(`${req.params.circuitRef} does not exist on the database`))
         return;
-    } else if(error) {
+    } else if (error) {
         console.error('Error fetching data:', error);
         return;
     }
@@ -52,28 +52,25 @@ app.get('/api/circuits/:circuitRef', async (req, res) => {
     res.send(data);
 });
 
-app.get('/api/circuits/seasons/:year', async (req, res) => {
-    const {data, error} = await supabase
-        .from(`circuits`)
-        .select()
-        .join('races', 'circuitId')
-        .join('seasons', 'year')
+app.get('/api/circuits/season/:year', async (req, res) => {
+    const { data, error } = await supabase
+        .from(`races`)
+        .select(`round, circuits(*)`)
         .eq('year', req.params.year)
-        .order('round', {ascending: true})
+        .order('round', { ascending: true })
 
-    if(data == null) {
+    if (data == null) {
         res.send(jsonMessage(`Query containing ${req.params.year} does not yield results`))
         return;
-    } else if(error) {
+    } else if (error) {
         console.error('Error fetching data:', error);
         return;
     }
-
     res.send(data);
 });
 
 app.get('/api/constructors', async (req, res) => {
-    const {data, error} = await supabase
+    const { data, error } = await supabase
         .from('constructors')
         .select()
     if (error) {
@@ -85,15 +82,15 @@ app.get('/api/constructors', async (req, res) => {
 });
 
 app.get('/api/constructors/:constructorRef', async (req, res) => {
-    const {data, error} = await supabase
+    const { data, error } = await supabase
         .from('constructors')
         .select()
         .eq('constructorRef', req.params.constructorRef)
 
-    if(data.length < 1 || data == undefined) {
+    if (data == null) {
         res.send(jsonMessage(`${req.params.constructorRef} does not exist on the database`))
         return;
-    } else if(error) {
+    } else if (error) {
         console.error('Error fetching data:', error);
         return;
     }
@@ -101,6 +98,33 @@ app.get('/api/constructors/:constructorRef', async (req, res) => {
     res.send(data);
 });
 
+app.get('/api/constructors/season/:year', async (req, res) => {
+    const { data, error } = await supabase
+        .from(`qualifying`)
+        .select(`constructors(*), races!inner()`)
+        .eq('races.year', req.params.year);
+
+    if (data == null) {
+        res.send(jsonMessage(`Query containing ${req.params.year} does not yield results`))
+        return;
+    } else if (error) {
+        console.error('Error fetching data:', error);
+        return;
+    }
+    res.send(data);
+});
+
+app.get('/api/drivers', async (req, res) => {
+    const { data, error } = await supabase
+        .from('cdrivers')
+        .select()
+    if (error) {
+        console.error('Error fetching data:', error);
+        return;
+    }
+
+    res.send(data);
+});
 
 
 
@@ -113,6 +137,7 @@ app.listen(8080, () => {
     console.log('http://localhost:8080/api/circuits');
     console.log('http://localhost:8080/api/circuits/monza');
     console.log('http://localhost:8080/api/circuits/calgary');
+
     console.log('');
     console.log('http://localhost:8080/api//api/constructors');
     console.log('http://localhost:8080/api/constructors/ferrari');
