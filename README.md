@@ -1,8 +1,9 @@
 # COMP 4513 (Winter 2024)
 ### Assignment #1: Node, SQL (via supabase)
 
-**Assignment 1 API Links**
+Main Glitch Site Link: https://zest-jolly-advantage.glitch.me
 
+**Assignment 1 API Links**
   
 https://zest-jolly-advantage.glitch.me/api/seasons
 
