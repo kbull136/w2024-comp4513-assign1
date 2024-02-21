@@ -42,7 +42,7 @@ app.get('/api/circuits/:circuitRef', async (req, res) => {
         .eq('circuitRef', req.params.circuitRef);
 
     if (data.length < 1 || data == null) {
-        res.send(jsonMessage(`Query containing circuit reference: ${req.params.circuitRef} does not yield results`))
+        res.send(jsonMessage(`Unable to fetch data containing circuit reference: ${req.params.circuitRef}`))
         return;
     } else if (error) {
         res.send(jsonMessage(`Error fetching data: ${error}`));
@@ -60,7 +60,7 @@ app.get('/api/circuits/season/:year', async (req, res) => {
         .order('round', { ascending: true });
 
     if (data == null || data.length < 1) {
-        res.send(jsonMessage(`Query containing year: ${req.params.year} does not yield results`))
+        res.send(jsonMessage(`Unable to fetch data containing year: ${req.params.year}`))
         return;
     } else if (error) {
         res.send(jsonMessage(`Error fetching data: ${error}`));
@@ -88,7 +88,7 @@ app.get('/api/constructors/:constructorRef', async (req, res) => {
         .eq('constructorRef', req.params.constructorRef.toLowerCase());
 
     if (data == null || data.length < 1) {
-        res.send(jsonMessage(`Query containing constructor reference: ${req.params.constructorRef} does not yield results`))
+        res.send(jsonMessage(`Unable to fetch data containing constructor reference: ${req.params.constructorRef}`))
         return;
     } else if (error) {
         res.send(jsonMessage(`Error fetching data: ${error}`));
@@ -118,7 +118,7 @@ app.get('/api/drivers/:driverRef', async (req, res) => {
         .eq('driverRef', req.params.driverRef.toLowerCase());
 
     if (data == null || data.length < 1) {
-        res.send(jsonMessage(`Query does not yield results containing driver reference: ${req.params.driverRef}`))
+        res.send(jsonMessage(`Unable to fetch data containing driver reference: ${req.params.driverRef}`))
         return;
     } else if (error) {
         res.send(jsonMessage(`Error fetching data: ${error}`));
@@ -135,7 +135,7 @@ app.get('/api/drivers/:substring', async (req, res) => {
         .ilike('surname', `%${req.params.substring.toLowerCase()}`);
 
     if (data == null || data.length < 1) {
-        res.send(jsonMessage(`Query does not yield results containing driver surname: ${req.params.substring} `))
+        res.send(jsonMessage(`Unable to fetch data containing driver surname: ${req.params.substring} `))
         return;
     } else if (error) {
         res.send(jsonMessage(`Error fetching data: ${error}`));
@@ -152,7 +152,7 @@ app.get('/api/drivers/race/:raceId', async (req, res) => {
         .eq('raceId', req.params.raceId);
 
     if (data == null || data.length < 1) {
-        res.send(jsonMessage(`Query does not yield results of drivers containing raceId: ${req.params.raceId}`))
+        res.send(jsonMessage(`Unable to fetch data of drivers containing raceId: ${req.params.raceId}`))
         return;
     } else if (error) {
         res.send(jsonMessage(`Error fetching data: ${error}`));
@@ -172,7 +172,7 @@ app.get('/api/races/:raceId', async (req, res) => {
         .eq('raceId', req.params.raceId);
 
     if (data == null || data.length < 1) {
-        res.send(jsonMessage(`Query does not yield results of races containing raceId: ${req.params.raceId}`))
+        res.send(jsonMessage(`Unable to fetch data of races containing raceId: ${req.params.raceId}`))
         return;
     } else if (error) {
         res.send(jsonMessage(`Error fetching data: ${error}`));
@@ -190,7 +190,7 @@ app.get('/api/races/season/:year', async (req, res) => {
         .order('round');
 
     if (data == null || data.length < 1) {
-        res.send(jsonMessage(`Query does not yield results of races with the year: ${req.params.year}`))
+        res.send(jsonMessage(`Unable to fetch data of races with the year: ${req.params.year}`))
         return;
     } else if (error) {
         res.send(jsonMessage(`Error fetching data: ${error}`));
@@ -208,7 +208,7 @@ app.get('/api/races/season/:year/:round', async (req, res) => {
         .eq('round', req.params.round);
 
     if (data == null || data.length < 1) {
-        res.send(jsonMessage(`Query does not yield results containing round: ${req.params.round} from season ${req.params.year}`))
+        res.send(jsonMessage(`Unable to fetch data containing round: ${req.params.round} from season ${req.params.year}`))
         return;
     } else if (error) {
         res.send(jsonMessage(`Error fetching data: ${error}`));
@@ -226,7 +226,7 @@ app.get('/api/races/circuits/:circuitRef', async (req, res) => {
         .order('year');
 
     if (data == null || data.length < 1) {
-        res.send(jsonMessage(`Query does not yield results containing circuitRef: ${req.params.circuitRef}`))
+        res.send(jsonMessage(`Unable to fetch data containing circuitRef: ${req.params.circuitRef}`))
         return;
     } else if (error) {
         res.send(jsonMessage(`Error fetching data: ${error}`));
@@ -244,8 +244,13 @@ app.get('/api/races/circuits/:circuitRef/season/:yearStart/:yearEnd', async (req
         .gte('year', req.params.yearStart)
         .lte('year', req.params.yearEnd);
 
+    if (req.params.yearStart > req.params.yearEnd) {
+        res.send(jsonMessage(`Unable to fetch data due to parameter mismatch: Starting year ${req.params.yearStart} is earlier than ending year ${req.params.yearEnd}`));
+        return;
+    }
+
     if (data == null || data.length < 1) {
-        res.send(jsonMessage(`Query does not yield results containing circuitRef: ${req.params.circuitRef} between the seasons ${req.params.yearStart} and ${req.params.yearEnd}`))
+        res.send(jsonMessage(`Unable to fetch data containing circuitRef: ${req.params.circuitRef} between the seasons ${req.params.yearStart} and ${req.params.yearEnd}`))
         return;
     } else if (error) {
         res.send(jsonMessage(`Error fetching data: ${error}`));
@@ -268,7 +273,7 @@ app.get('/api/results/:raceId', async (req, res) => {
         .order('grid', { ascending: true });
 
     if (data == null || data.length < 1) {
-        res.send(jsonMessage(`Query does not yield results containing raceId: ${req.params.raceId}`))
+        res.send(jsonMessage(`Unable to fetch data containing raceId: ${req.params.raceId}`))
         return;
     } else if (error) {
         res.send(jsonMessage(`Error fetching data: ${error}`));
@@ -285,7 +290,7 @@ app.get('/api/results/driver/:driverRef', async (req, res) => {
         .eq('drivers.driverRef', req.params.driverRef);
 
     if (data == null || data.length < 1) {
-        res.send(jsonMessage(`Query does not yield results containing driverRef ${req.params.driverRef}`))
+        res.send(jsonMessage(`Unable to fetch data containing driverRef ${req.params.driverRef}`))
         return;
     } else if (error) {
         res.send(jsonMessage(`Error fetching data: ${error}`));
@@ -303,8 +308,13 @@ app.get('/api/results/driver/:driverRef/seasons/:yearStart/:yearEnd', async (req
         .gte('races.year', req.params.yearStart)
         .lte('races.year', req.params.yearEnd);
 
+    if (req.params.yearStart > req.params.yearEnd) {
+        res.send(jsonMessage(`Unable to fetch data due to parameter mismatch: Starting year is earlier than Ending year`));
+        return;
+    }
+
     if (data == null || data.length < 1) {
-        res.send(jsonMessage(`Query does not yield results containing driverRef: ${req.params.driverRef}, between seasons ${req.params.yearStart} and ${req.params.yearEnd}`));
+        res.send(jsonMessage(`Unable to fetch data containing driverRef: ${req.params.driverRef}, between seasons ${req.params.yearStart} and ${req.params.yearEnd}`));
         return;
     } else if (error) {
         res.send(jsonMessage(`Error fetching data: ${error}`));
@@ -325,7 +335,7 @@ app.get('/api/qualifying/:raceId', async (req, res) => {
         .order('position', { ascending: true });
 
     if (data == null || data.length < 1) {
-        res.send(jsonMessage(`Query does not yield results containing raceId: ${req.params.raceId}`))
+        res.send(jsonMessage(`Unable to fetch data containing raceId: ${req.params.raceId}`))
         return;
     } else if (error) {
         res.send(jsonMessage(`Error fetching data: ${error}`));
@@ -345,7 +355,7 @@ app.get('/api/standings/:raceId/drivers', async (req, res) => {
         .order('position', { ascending: true })
 
     if (data == null || data.length < 1) {
-        res.send(jsonMessage(`Query does not yield results containing raceId: ${req.params.raceId}`))
+        res.send(jsonMessage(`Unable to fetch data containing raceId: ${req.params.raceId}`))
         return;
     } else if (error) {
         res.send(jsonMessage(`Error fetching data: ${error}`));
@@ -365,7 +375,7 @@ app.get('/api/standings/:raceId/constructors', async (req, res) => {
         .order('position', { ascending: true })
 
     if (data == null || data.length < 1) {
-        res.send(jsonMessage(`Query does not yield results containing raceId: ${req.params.raceId}`))
+        res.send(jsonMessage(`Unable to fetch data containing raceId: ${req.params.raceId}`))
         return;
     } else if (error) {
         res.send(jsonMessage(`Error fetching data: ${error}`));
