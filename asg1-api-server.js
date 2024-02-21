@@ -16,7 +16,7 @@ app.get('/api/seasons', async (req, res) => {
         .from('seasons')
         .select();
     if (error) {
-        console.error('Error fetching data:', error);
+        res.send(jsonMessage(`Error fetching data: ${error}`));
         return;
     }
 
@@ -28,7 +28,7 @@ app.get('/api/circuits', async (req, res) => {
         .from('circuits')
         .select();
     if (error) {
-        console.error('Error fetching data:', error);
+        res.send(jsonMessage(`Error fetching data: ${error}`));
         return;
     }
 
@@ -45,7 +45,7 @@ app.get('/api/circuits/:circuitRef', async (req, res) => {
         res.send(jsonMessage(`Query containing circuit reference: ${req.params.circuitRef} does not yield results`))
         return;
     } else if (error) {
-        console.error('Error fetching data:', error);
+        res.send(jsonMessage(`Error fetching data: ${error}`));
         return;
     }
 
@@ -63,7 +63,7 @@ app.get('/api/circuits/season/:year', async (req, res) => {
         res.send(jsonMessage(`Query containing year: ${req.params.year} does not yield results`))
         return;
     } else if (error) {
-        console.error('Error fetching data:', error);
+        res.send(jsonMessage(`Error fetching data: ${error}`));
         return;
     }
     res.send(data);
@@ -74,7 +74,7 @@ app.get('/api/constructors', async (req, res) => {
         .from('constructors')
         .select();
     if (error) {
-        console.error('Error fetching data:', error);
+        res.send(jsonMessage(`Error fetching data: ${error}`));
         return;
     }
 
@@ -91,7 +91,7 @@ app.get('/api/constructors/:constructorRef', async (req, res) => {
         res.send(jsonMessage(`Query containing constructor reference: ${req.params.constructorRef} does not yield results`))
         return;
     } else if (error) {
-        console.error('Error fetching data:', error);
+        res.send(jsonMessage(`Error fetching data: ${error}`));
         return;
     }
 
@@ -102,8 +102,9 @@ app.get('/api/drivers', async (req, res) => {
     const { data, error } = await supabase
         .from('drivers')
         .select();
+
     if (error) {
-        console.error('Error fetching data:', error);
+        res.send(jsonMessage(`Error fetching data: ${error}`));
         return;
     }
 
@@ -116,11 +117,11 @@ app.get('/api/drivers/:driverRef', async (req, res) => {
         .select()
         .eq('driverRef', req.params.driverRef.toLowerCase());
 
-    if (data == null) {
-        res.send(jsonMessage(`Query that contains driver reference: ${req.params.driverRef} does not yield results`))
+    if (data == null || data.length < 1) {
+        res.send(jsonMessage(`Query does not yield results containing driver reference: ${req.params.driverRef}`))
         return;
     } else if (error) {
-        console.error('Error fetching data:', error);
+        res.send(jsonMessage(`Error fetching data: ${error}`));
         return;
     }
 
@@ -134,10 +135,10 @@ app.get('/api/drivers/:substring', async (req, res) => {
         .ilike('surname', `%${req.params.substring.toLowerCase()}`);
 
     if (data == null || data.length < 1) {
-        res.send(jsonMessage(`Query that starts with driver surname: ${req.params.substring} does not yield results`))
+        res.send(jsonMessage(`Query does not yield results containing driver surname: ${req.params.substring} `))
         return;
     } else if (error) {
-        console.error('Error fetching data:', error);
+        res.send(jsonMessage(`Error fetching data: ${error}`));
         return;
     }
 
@@ -151,10 +152,10 @@ app.get('/api/drivers/race/:raceId', async (req, res) => {
         .eq('raceId', req.params.raceId);
 
     if (data == null || data.length < 1) {
-        res.send(jsonMessage(`Query containing drivers from raceId: ${req.params.raceId} does not yield results`))
+        res.send(jsonMessage(`Query does not yield results of drivers containing raceId: ${req.params.raceId}`))
         return;
     } else if (error) {
-        console.error('Error fetching data:', error);
+        res.send(jsonMessage(`Error fetching data: ${error}`));
         return;
     }
     res.send(data);
@@ -171,10 +172,10 @@ app.get('/api/races/:raceId', async (req, res) => {
         .eq('raceId', req.params.raceId);
 
     if (data == null || data.length < 1) {
-        res.send(jsonMessage(`Query containing race with raceId: ${req.params.raceId} does not yield results`))
+        res.send(jsonMessage(`Query does not yield results of races containing raceId: ${req.params.raceId}`))
         return;
     } else if (error) {
-        console.error('Error fetching data:', error);
+        res.send(jsonMessage(`Error fetching data: ${error}`));
         return;
     }
 
@@ -189,10 +190,10 @@ app.get('/api/races/season/:year', async (req, res) => {
         .order('round');
 
     if (data == null || data.length < 1) {
-        res.send(jsonMessage(`Query containing races from year: ${req.params.year} does not yield results`))
+        res.send(jsonMessage(`Query does not yield results of races with the year: ${req.params.year}`))
         return;
     } else if (error) {
-        console.error('Error fetching data:', error);
+        res.send(jsonMessage(`Error fetching data: ${error}`));
         return;
     }
 
@@ -207,10 +208,10 @@ app.get('/api/races/season/:year/:round', async (req, res) => {
         .eq('round', req.params.round);
 
     if (data == null || data.length < 1) {
-        res.send(jsonMessage(`Query containing races from year: ${req.params.year} with round: ${req.params.round} does not yield results`))
+        res.send(jsonMessage(`Query does not yield results containing round: ${req.params.round} from season ${req.params.year}`))
         return;
     } else if (error) {
-        console.error('Error fetching data:', error);
+        res.send(jsonMessage(`Error fetching data: ${error}`));
         return;
     }
 
@@ -225,10 +226,10 @@ app.get('/api/races/circuits/:circuitRef', async (req, res) => {
         .order('year');
 
     if (data == null || data.length < 1) {
-        res.send(jsonMessage(`Query containing races using the circuit with reference: ${req.params.circuitRef} does not yield results`))
+        res.send(jsonMessage(`Query does not yield results containing circuitRef: ${req.params.circuitRef}`))
         return;
     } else if (error) {
-        console.error('Error fetching data:', error);
+        res.send(jsonMessage(`Error fetching data: ${error}`));
         return;
     }
 
@@ -244,10 +245,10 @@ app.get('/api/races/circuits/:circuitRef/season/:yearStart/:yearEnd', async (req
         .lte('year', req.params.yearEnd);
 
     if (data == null || data.length < 1) {
-        res.send(jsonMessage(`Query containing races using the circuit with reference: ${req.params.circuitRef} between the years ${req.params.yearStart} and ${req.params.yearEnd} does not yield results`))
+        res.send(jsonMessage(`Query does not yield results containing circuitRef: ${req.params.circuitRef} between the seasons ${req.params.yearStart} and ${req.params.yearEnd}`))
         return;
     } else if (error) {
-        console.error('Error fetching data:', error);
+        res.send(jsonMessage(`Error fetching data: ${error}`));
         return;
     }
 
@@ -267,10 +268,10 @@ app.get('/api/results/:raceId', async (req, res) => {
         .order('grid', { ascending: true });
 
     if (data == null || data.length < 1) {
-        res.send(jsonMessage(`Query does not yield results`))
+        res.send(jsonMessage(`Query does not yield results containing raceId: ${req.params.raceId}`))
         return;
     } else if (error) {
-        console.error('Error fetching data:', error);
+        res.send(jsonMessage(`Error fetching data: ${error}`));
         return;
     }
 
@@ -284,17 +285,17 @@ app.get('/api/results/driver/:driverRef', async (req, res) => {
         .eq('drivers.driverRef', req.params.driverRef);
 
     if (data == null || data.length < 1) {
-        res.send(jsonMessage(`Query does not yield results`))
+        res.send(jsonMessage(`Query does not yield results containing driverRef ${req.params.driverRef}`))
         return;
     } else if (error) {
-        console.error('Error fetching data:', error);
+        res.send(jsonMessage(`Error fetching data: ${error}`));
         return;
     }
 
     res.send(data);
 });
 
-app.get('/api/results/drivers/:driverRef/seasons/:yearStart/:yearEnd', async (req, res) => {
+app.get('/api/results/driver/:driverRef/seasons/:yearStart/:yearEnd', async (req, res) => {
     const { data, error } = await supabase
         .from('results')
         .select(`*, drivers!inner(), races!inner()`)
@@ -303,10 +304,10 @@ app.get('/api/results/drivers/:driverRef/seasons/:yearStart/:yearEnd', async (re
         .lte('races.year', req.params.yearEnd);
 
     if (data == null || data.length < 1) {
-        res.send(jsonMessage(`Query does not yield results`))
+        res.send(jsonMessage(`Query does not yield results containing driverRef: ${req.params.driverRef}, between seasons ${req.params.yearStart} and ${req.params.yearEnd}`));
         return;
     } else if (error) {
-        console.error('Error fetching data:', error);
+        res.send(jsonMessage(`Error fetching data: ${error}`));
         return;
     }
 
@@ -324,17 +325,17 @@ app.get('/api/qualifying/:raceId', async (req, res) => {
         .order('position', { ascending: true });
 
     if (data == null || data.length < 1) {
-        res.send(jsonMessage(`Query does not yield results`))
+        res.send(jsonMessage(`Query does not yield results containing raceId: ${req.params.raceId}`))
         return;
     } else if (error) {
-        console.error('Error fetching data:', error);
+        res.send(jsonMessage(`Error fetching data: ${error}`));
         return;
     }
 
     res.send(data);
 });
 
-app.get('/api/standings/drivers/:raceId', async (req, res) => {
+app.get('/api/standings/:raceId/drivers', async (req, res) => {
     const { data, error } = await supabase
         .from('driverStandings')
         .select(`driverStandingsId, raceId, points, position,
@@ -344,17 +345,17 @@ app.get('/api/standings/drivers/:raceId', async (req, res) => {
         .order('position', { ascending: true })
 
     if (data == null || data.length < 1) {
-        res.send(jsonMessage(`Query does not yield results`))
+        res.send(jsonMessage(`Query does not yield results containing raceId: ${req.params.raceId}`))
         return;
     } else if (error) {
-        res.send(jsonMessage(error))
+        res.send(jsonMessage(`Error fetching data: ${error}`));
         return;
     }
 
     res.send(data);
 });
 
-app.get('/api/standings/constructors/:raceId', async (req, res) => {
+app.get('/api/standings/:raceId/constructors', async (req, res) => {
     const { data, error } = await supabase
         .from('constructorStandings')
         .select(`constructorStandingsId, raceId, points, position,
@@ -364,10 +365,10 @@ app.get('/api/standings/constructors/:raceId', async (req, res) => {
         .order('position', { ascending: true })
 
     if (data == null || data.length < 1) {
-        res.send(jsonMessage(`Query does not yield results`))
+        res.send(jsonMessage(`Query does not yield results containing raceId: ${req.params.raceId}`))
         return;
     } else if (error) {
-        res.send(jsonMessage(error))
+        res.send(jsonMessage(`Error fetching data: ${error}`));
         return;
     }
 
@@ -400,18 +401,18 @@ app.listen(8080, () => {
     console.log('http://localhost:8080/api/races/1034');
     console.log('http://localhost:8080/api/races/season/2021');
     console.log('http://localhost:8080/api/races/season/2020/2022');
-    console.log('http://localhost:8080/api/races/season/2022/2020');
+    console.log('http://localhost:8080/api/races/season/2022/4');
     console.log('http://localhost:8080/api/races/circuits/monza');
     console.log('http://localhost:8080/api/races/circuits/monza/season/2015/2022');
     console.log('');
     console.log('http://localhost:8080/api/results/1106');
     console.log('http://localhost:8080/api/results/driver/max_verstappen');
     console.log('http://localhost:8080/api/results/driver/connolly');
-    console.log('http://localhost:8080/api/results/drivers/sainz/seasons/2021/2022');
+    console.log('http://localhost:8080/api/results/driver/sainz/seasons/2021/2022');
     console.log('');
     console.log('http://localhost:8080/api/qualifying/1106');
     console.log('');
-    console.log('http://localhost:8080/api/standings/drivers/1120');
-    console.log('http://localhost:8080/api/standings/constructors/1120');
-    console.log('http://localhost:8080/api/standings/constructors/asds');
+    console.log('http://localhost:8080/api/standings/1120/drivers');
+    console.log('http://localhost:8080/api/standings/1120/constructors');
+    console.log('http://localhost:8080/api/standings/asds/constructors');
 });
