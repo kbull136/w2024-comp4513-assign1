@@ -32,8 +32,6 @@ https://zest-jolly-advantage.glitch.me/api/races/1034
 
 https://zest-jolly-advantage.glitch.me/api/races/season/2021
 
-https://zest-jolly-advantage.glitch.me/api/races/season/2020/2022
-
 https://zest-jolly-advantage.glitch.me/api/races/season/2022/4
 
 https://zest-jolly-advantage.glitch.me/api/circuits/monza
