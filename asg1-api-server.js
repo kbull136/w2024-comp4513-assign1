@@ -130,11 +130,11 @@ app.get('/api/drivers/:driverRef', async (req, res) => {
     res.send(data);
 });
 
-app.get('/api/drivers/:substring', async (req, res) => {
+app.get('/api/drivers/search/:substring', async (req, res) => {
     const { data, error } = await supabase
         .from('drivers')
         .select()
-        .ilike('surname', `%${req.params.substring.toLowerCase()}`);
+        .ilike('surname', `${req.params.substring}%`);
 
 
     if (error) {
