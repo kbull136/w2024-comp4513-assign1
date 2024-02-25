@@ -403,9 +403,8 @@ app.listen(8080, () => {
     console.log('');
     console.log('http://localhost:8080/api/constructors');
     console.log('http://localhost:8080/api/constructors/ferrari');
-    console.log('http://localhost:8080/api/drivers');
     console.log('');
-    console.log('Next two checks for case insensitivity')
+    console.log('http://localhost:8080/api/drivers');
     console.log('http://localhost:8080/api/drivers/Norris');
     console.log('http://localhost:8080/api/drivers/norris');
     console.log('http://localhost:8080/api/drivers/connolly');
