@@ -16,7 +16,7 @@ app.get('/api/seasons', async (req, res) => {
         .from('seasons')
         .select();
     if (error) {
-        res.send(jsonMessage(`Error fetching data: ${error}`));
+        res.send(jsonMessage(`Error fetching data: The path is broken or the database does not exist`));
         return;
     }
 
@@ -28,7 +28,7 @@ app.get('/api/circuits', async (req, res) => {
         .from('circuits')
         .select();
     if (error) {
-        res.send(jsonMessage(`Error fetching data: ${error}`));
+        res.send(jsonMessage(`Error fetching data: The path is broken or the database does not exist`));
         return;
     }
 
@@ -42,7 +42,7 @@ app.get('/api/circuits/:circuitRef', async (req, res) => {
         .eq('circuitRef', req.params.circuitRef);
 
     if (error) {
-        res.send(jsonMessage(`Error fetching data: ${error}`));
+        res.send(jsonMessage(`Error fetching data: ${req.params.circuitRef} is not a valid parameter`));
         return;
     } else if (data.length < 1 || data == null) {
         res.send(jsonMessage(`Unable to fetch data containing circuit reference: ${req.params.circuitRef}`))
@@ -60,7 +60,7 @@ app.get('/api/circuits/season/:year', async (req, res) => {
         .order('round', { ascending: true });
 
     if (error) {
-        res.send(jsonMessage(`Error fetching data: ${error}`));
+        res.send(jsonMessage(`Error fetching data: ${req.params.year} is not a valid parameter`));
         return;
     } else if (data.length < 1 || data == null) {
         res.send(jsonMessage(`Unable to fetch data containing year: ${req.params.year}`))
@@ -76,7 +76,7 @@ app.get('/api/constructors', async (req, res) => {
         .select();
 
     if (error) {
-        res.send(jsonMessage(`Error fetching data: ${error}`));
+        res.send(jsonMessage(`Error fetching data: The path is broken or the database does not exist`));
         return;
     }
 
@@ -90,7 +90,7 @@ app.get('/api/constructors/:constructorRef', async (req, res) => {
         .eq('constructorRef', req.params.constructorRef.toLowerCase());
 
     if (error) {
-        res.send(jsonMessage(`Error fetching data: ${error}`));
+        res.send(jsonMessage(`Error fetching data: The path is broken or the database does not exist`));
         return;
     } else if (data.length < 1 || data == null) {
         res.send(jsonMessage(`Unable to fetch data containing constructor reference: ${req.params.constructorRef}`))
@@ -106,7 +106,7 @@ app.get('/api/drivers', async (req, res) => {
         .select();
 
     if (error) {
-        res.send(jsonMessage(`Error fetching data: ${error}`));
+        res.send(jsonMessage(`Error fetching data: The path is broken or the database does not exist`));
         return;
     }
 
@@ -117,10 +117,10 @@ app.get('/api/drivers/:driverRef', async (req, res) => {
     const { data, error } = await supabase
         .from('drivers')
         .select()
-        .eq('driverRef', req.params.driverRef.toLowerCase());
+        .eq('driverRef', req.params.driverRef);
 
     if (error) {
-        res.send(jsonMessage(`Error fetching data: ${error}`));
+        res.send(jsonMessage(`Error fetching data: ${req.params.driverRef} is not a valid parameter`));
         return;
     } else if (data.length < 1 || data == null) {
         res.send(jsonMessage(`Unable to fetch data containing driver reference: ${req.params.driverRef}`))
@@ -138,10 +138,10 @@ app.get('/api/drivers/search/:substring', async (req, res) => {
 
 
     if (error) {
-        res.send(jsonMessage(`Error fetching data: ${error}`));
+        res.send(jsonMessage(`Error fetching data: ${req.params.substring} is not a valid parameter`));
         return;
     } else if (data.length < 1 || data == null) {
-        res.send(jsonMessage(`Unable to fetch data containing driver surname: ${req.params.substring} `))
+        res.send(jsonMessage(`Unable to fetch data containing driver surname: ${req.params.substring}`))
         return;
     }
 
@@ -155,7 +155,7 @@ app.get('/api/drivers/race/:raceId', async (req, res) => {
         .eq('raceId', req.params.raceId);
 
     if (error) {
-        res.send(jsonMessage(`Error fetching data: ${error}`));
+        res.send(jsonMessage(`Error fetching data: ${req.params.raceId} is not a valid parameter`));
         return;
     } else if (data.length < 1 || data == null) {
         res.send(jsonMessage(`Unable to fetch data of drivers containing raceId: ${req.params.raceId}`))
@@ -176,7 +176,7 @@ app.get('/api/races/:raceId', async (req, res) => {
         .eq('raceId', req.params.raceId);
 
     if (error) {
-        res.send(jsonMessage(`Error fetching data: ${error}`));
+        res.send(jsonMessage(`Error fetching data: ${req.params.raceId} is not a valid parameter`));
         return;
     } else if (data.length < 1 || data == null) {
         res.send(jsonMessage(`Unable to fetch data of races containing raceId: ${req.params.raceId}`))
@@ -194,7 +194,7 @@ app.get('/api/races/season/:year', async (req, res) => {
         .order('round');
 
     if (error) {
-        res.send(jsonMessage(`Error fetching data: ${error}`));
+        res.send(jsonMessage(`Error fetching data: ${req.params.year} is not a valid parameter`));
         return;
     } else if (data.length < 1 || data == null) {
         res.send(jsonMessage(`Unable to fetch data of races with the year: ${req.params.year}`))
@@ -212,7 +212,7 @@ app.get('/api/races/season/:year/:round', async (req, res) => {
         .eq('round', req.params.round);
 
     if (error) {
-        res.send(jsonMessage(`Error fetching data: ${error}`));
+        res.send(jsonMessage(`Error fetching data: one of the parameters is not a valid type`));
         return;
     } else if (data.length < 1 || data == null) {
         res.send(jsonMessage(`Unable to fetch data containing round: ${req.params.round} from season ${req.params.year}`))
@@ -230,7 +230,7 @@ app.get('/api/races/circuits/:circuitRef', async (req, res) => {
         .order('year');
 
     if (error) {
-        res.send(jsonMessage(`Error fetching data: ${error}`));
+        res.send(jsonMessage(`Error fetching data: ${req.params.circuitRef} is not a valid parameter`));
         return;
     } else if (data.length < 1 || data == null) {
         res.send(jsonMessage(`Unable to fetch data containing circuitRef: ${req.params.circuitRef}`))
@@ -254,7 +254,7 @@ app.get('/api/races/circuits/:circuitRef/season/:yearStart/:yearEnd', async (req
     }
 
     if (error) {
-        res.send(jsonMessage(`Error fetching data: ${error}`));
+        res.send(jsonMessage(`Error fetching data: one of the parameters is not a valid type`));
         return;
     } else if (data.length < 1 || data == null) {
         res.send(jsonMessage(`Unable to fetch data containing circuitRef: ${req.params.circuitRef} between the seasons ${req.params.yearStart} and ${req.params.yearEnd}`))
@@ -278,7 +278,7 @@ app.get('/api/results/:raceId', async (req, res) => {
 
 
     if (error) {
-        res.send(jsonMessage(`Error fetching data: ${error}`));
+        res.send(jsonMessage(`Error fetching data: ${req.params.raceId} is not a valid parameter`));
         return;
     } else if (data.length < 1 || data == null) {
         res.send(jsonMessage(`Unable to fetch data containing raceId: ${req.params.raceId}`))
@@ -295,7 +295,7 @@ app.get('/api/results/driver/:driverRef', async (req, res) => {
         .eq('drivers.driverRef', req.params.driverRef);
 
     if (error) {
-        res.send(jsonMessage(`Error fetching data: ${error}`));
+        res.send(jsonMessage(`Error fetching data: ${req.params.driverRef} is not a valid parameter`));
         return;
     } else if (data.length < 1 || data == null) {
         res.send(jsonMessage(`Unable to fetch data containing driverRef ${req.params.driverRef}`))
@@ -319,7 +319,7 @@ app.get('/api/results/driver/:driverRef/seasons/:yearStart/:yearEnd', async (req
     }
 
     if (error) {
-        res.send(jsonMessage(`Error fetching data: ${error}`));
+        res.send(jsonMessage(`Error fetching data: one of the parameters is not a valid type`));
         return;
     } else if (data.length < 1 || data == null) {
         res.send(jsonMessage(`Unable to fetch data containing driverRef: ${req.params.driverRef}, between seasons ${req.params.yearStart} and ${req.params.yearEnd}`));
@@ -340,7 +340,7 @@ app.get('/api/qualifying/:raceId', async (req, res) => {
         .order('position', { ascending: true });
 
     if (error) {
-        res.send(jsonMessage(`Error fetching data: ${error}`));
+        res.send(jsonMessage(`Error fetching data: one of the parameters is not a valid type`));
         return;
     } else if (data.length < 1 || data == null) {
         res.send(jsonMessage(`Unable to fetch data containing raceId: ${req.params.raceId}`))
@@ -360,7 +360,7 @@ app.get('/api/standings/:raceId/drivers', async (req, res) => {
         .order('position', { ascending: true })
 
     if (error) {
-        res.send(jsonMessage(`Error fetching data: ${error}`));
+        res.send(jsonMessage(`Error fetching data: ${req.params.raceId} is not a valid parameter`));
         return;
     } else if (data.length < 1 || data == null) {
         res.send(jsonMessage(`Unable to fetch data containing raceId: ${req.params.raceId}`))
@@ -380,7 +380,7 @@ app.get('/api/standings/:raceId/constructors', async (req, res) => {
         .order('position', { ascending: true })
 
     if (error) {
-        res.send(jsonMessage(`Error fetching data: ${error}`));
+        res.send(jsonMessage(`Error fetching data: ${req.params.raceId} is not a valid parameter`));
         return;
     } else if (data.length < 1 || data == null) {
         res.send(jsonMessage(`Unable to fetch data containing raceId: ${req.params.raceId}`))
