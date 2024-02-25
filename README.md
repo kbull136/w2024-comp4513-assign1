@@ -36,9 +36,9 @@ https://zest-jolly-advantage.glitch.me/api/races/season/2021
 
 https://zest-jolly-advantage.glitch.me/api/races/season/2022/4
 
-https://zest-jolly-advantage.glitch.me/api/circuits/monza
+https://zest-jolly-advantage.glitch.me/api/races/circuits/monza
 
-https://zest-jolly-advantage.glitch.me/api/circuits/monza/season/2015/2022
+https://zest-jolly-advantage.glitch.me/api/races/circuits/monza/season/2015/2022
 
 https://zest-jolly-advantage.glitch.me/api/results/driver/max_verstappen
 
