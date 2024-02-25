@@ -10,6 +10,8 @@ https://zest-jolly-advantage.glitch.me/api/circuits
 
 https://zest-jolly-advantage.glitch.me/api/circuits/monza
 
+https://zest-jolly-advantage.glitch.me/api/circuits/calgary
+
 https://zest-jolly-advantage.glitch.me/api/constructors
 
 https://zest-jolly-advantage.glitch.me/api/constructors/ferrari
