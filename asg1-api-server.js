@@ -1,40 +1,70 @@
 const express = require('express');
 const supa = require('@supabase/supabase-js');
 const app = express();
-
-const jsonMessage = (msg) => {
-    return { message: msg };
-};
-
 const supaUrl = 'https://tnhjiogbryszverqyefr.supabase.co';
 const supaAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRuaGppb2dicnlzenZlcnF5ZWZyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDcxODU4NzYsImV4cCI6MjAyMjc2MTg3Nn0._ALr_YGrUwbVXM7IQ6q9TB8oTWRqa-fTopd7q63w3F8';
 
 const supabase = supa.createClient(supaUrl, supaAnonKey);
 
+const jsonMessage = (msg) => {
+    return { message: msg };
+};
+
+function displayErrorParam(res, param1, param2 = null, param3 = null) {
+    if (param2 == null && param3 == null) {
+        return res.send(jsonMessage(`Error fetching data: ${param1} is not a valid parameter`));
+    } else {
+        return res.send(jsonMessage(`Error fetching data: one of the parameters is not a valid type`));
+
+    }
+}
+
+function displayErrorFetch(res) {
+    return res.send(jsonMessage(`Error fetching data: The path is broken or the database does not exist`));
+}
+
+function displayNoData(res, param1, param2 = null, param3 = null) {
+    if (param2 == null) {
+        return res.send(jsonMessage(`Query using parameter ${param1} does not exist on the database`));
+    } else if (param3 == null) {
+        return res.send(jsonMessage(`Query using parameters ${param1} and ${param2} does not exist on the database`));
+    } else {
+        return res.send(jsonMessage(`Query using parameters ${param1}, ${param2}, and ${param3} does not exist on the database`));
+    }
+
+}
+
+/**
+ * Returns all the data from the seasons table
+ */
 app.get('/api/seasons', async (req, res) => {
     const { data, error } = await supabase
         .from('seasons')
         .select();
     if (error) {
-        res.send(jsonMessage(`Error fetching data: The path is broken or the database does not exist`));
-        return;
+        return displayErrorFetch(res);
     }
 
     res.send(data);
 });
 
+/**
+ * Returns all the data from the circuits table
+ */
 app.get('/api/circuits', async (req, res) => {
     const { data, error } = await supabase
         .from('circuits')
         .select();
     if (error) {
-        res.send(jsonMessage(`Error fetching data: The path is broken or the database does not exist`));
-        return;
+        return displayErrorFetch(res);
     }
 
     res.send(data);
 });
 
+/**
+ * Returns the data of the specified circuit from the circuits table
+ */
 app.get('/api/circuits/:circuitRef', async (req, res) => {
     const { data, error } = await supabase
         .from('circuits')
@@ -42,16 +72,17 @@ app.get('/api/circuits/:circuitRef', async (req, res) => {
         .eq('circuitRef', req.params.circuitRef);
 
     if (error) {
-        res.send(jsonMessage(`Error fetching data: ${req.params.circuitRef} is not a valid parameter`));
-        return;
+        return displayErrorParam(res, req.params.circuitRef);
     } else if (data.length < 1 || data == null) {
-        res.send(jsonMessage(`Unable to fetch data containing circuit reference: ${req.params.circuitRef}`))
-        return;
+        return displayNoData(res, req.params.circuitRef);
     }
 
     res.send(data);
 });
 
+/**
+ * Returns all the circuit data in a given season (year). Sorted by round in ascending order
+ */
 app.get('/api/circuits/season/:year', async (req, res) => {
     const { data, error } = await supabase
         .from(`races`)
@@ -60,29 +91,32 @@ app.get('/api/circuits/season/:year', async (req, res) => {
         .order('round', { ascending: true });
 
     if (error) {
-        res.send(jsonMessage(`Error fetching data: ${req.params.year} is not a valid parameter`));
-        return;
+        return displayErrorParam(res, req.params.year);
     } else if (data.length < 1 || data == null) {
-        res.send(jsonMessage(`Unable to fetch data containing year: ${req.params.year}`))
-        return;
+        return displayNoData(res, req.params.year);
     }
 
     res.send(data);
 });
 
+/**
+ * Returns all the data from the constructors table
+ */
 app.get('/api/constructors', async (req, res) => {
     const { data, error } = await supabase
         .from('constructors')
         .select();
 
     if (error) {
-        res.send(jsonMessage(`Error fetching data: The path is broken or the database does not exist`));
-        return;
+        return displayErrorFetch(res);
     }
 
     res.send(data);
 });
 
+/**
+ * Returns  the data of the specified constructor from the constructors table
+ */
 app.get('/api/constructors/:constructorRef', async (req, res) => {
     const { data, error } = await supabase
         .from('constructors')
@@ -90,29 +124,32 @@ app.get('/api/constructors/:constructorRef', async (req, res) => {
         .eq('constructorRef', req.params.constructorRef.toLowerCase());
 
     if (error) {
-        res.send(jsonMessage(`Error fetching data: The path is broken or the database does not exist`));
-        return;
+        return displayErrorFetch(res);
     } else if (data.length < 1 || data == null) {
-        res.send(jsonMessage(`Unable to fetch data containing constructor reference: ${req.params.constructorRef}`))
-        return;
+        return displayNoData(res, req.params.constructorRef);
     }
 
     res.send(data);
 });
 
+/**
+ * Returns all the data from the drivers table
+ */
 app.get('/api/drivers', async (req, res) => {
     const { data, error } = await supabase
         .from('drivers')
         .select();
 
     if (error) {
-        res.send(jsonMessage(`Error fetching data: The path is broken or the database does not exist`));
-        return;
+        return displayErrorFetch(res);
     }
 
     res.send(data);
 });
 
+/**
+ * Returns the data of the specified driver from the drivers table
+ */
 app.get('/api/drivers/:driverRef', async (req, res) => {
     const { data, error } = await supabase
         .from('drivers')
@@ -120,16 +157,17 @@ app.get('/api/drivers/:driverRef', async (req, res) => {
         .eq('driverRef', req.params.driverRef);
 
     if (error) {
-        res.send(jsonMessage(`Error fetching data: ${req.params.driverRef} is not a valid parameter`));
-        return;
+        return displayErrorParam(res, req.params.driverRef);
     } else if (data.length < 1 || data == null) {
-        res.send(jsonMessage(`Unable to fetch data containing driver reference: ${req.params.driverRef}`))
-        return;
+        return displayNoData(res, req.params.driverRef);
     }
 
     res.send(data);
 });
 
+/**
+ * Returns the drivers whose surname (case insensitive) begins with the substring parameter)
+ */
 app.get('/api/drivers/search/:substring', async (req, res) => {
     const { data, error } = await supabase
         .from('drivers')
@@ -138,16 +176,17 @@ app.get('/api/drivers/search/:substring', async (req, res) => {
 
 
     if (error) {
-        res.send(jsonMessage(`Error fetching data: ${req.params.substring} is not a valid parameter`));
-        return;
+        return displayErrorParam(res, req.params.substring);
     } else if (data.length < 1 || data == null) {
-        res.send(jsonMessage(`Unable to fetch data containing driver surname: ${req.params.substring}`))
-        return;
+        return displayNoData(res, req.params.substring);
     }
 
     res.send(data);
 });
 
+/**
+ * Returns all driver data from a given raceId
+ */
 app.get('/api/drivers/race/:raceId', async (req, res) => {
     const { data, error } = await supabase
         .from('results')
@@ -155,16 +194,17 @@ app.get('/api/drivers/race/:raceId', async (req, res) => {
         .eq('raceId', req.params.raceId);
 
     if (error) {
-        res.send(jsonMessage(`Error fetching data: ${req.params.raceId} is not a valid parameter`));
-        return;
+        return displayErrorParam(res, req.params.raceId);
     } else if (data.length < 1 || data == null) {
-        res.send(jsonMessage(`Unable to fetch data of drivers containing raceId: ${req.params.raceId}`))
-        return;
+        return displayNoData(res, req.params.raceId);
     }
 
     res.send(data);
 });
 
+/**
+ * Returns the data of the specified race from the races table
+ */
 app.get('/api/races/:raceId', async (req, res) => {
     const { data, error } = await supabase
         .from('races')
@@ -176,16 +216,17 @@ app.get('/api/races/:raceId', async (req, res) => {
         .eq('raceId', req.params.raceId);
 
     if (error) {
-        res.send(jsonMessage(`Error fetching data: ${req.params.raceId} is not a valid parameter`));
-        return;
+        return displayErrorParam(res, req.params.raceId);
     } else if (data.length < 1 || data == null) {
-        res.send(jsonMessage(`Unable to fetch data of races containing raceId: ${req.params.raceId}`))
-        return;
+        return displayNoData(res, req.params.raceId);
     }
 
     res.send(data);
 });
 
+/**
+ * Returns the data of all the races from a specified season (year) ordered by round
+ */
 app.get('/api/races/season/:year', async (req, res) => {
     const { data, error } = await supabase
         .from('races')
@@ -194,16 +235,17 @@ app.get('/api/races/season/:year', async (req, res) => {
         .order('round');
 
     if (error) {
-        res.send(jsonMessage(`Error fetching data: ${req.params.year} is not a valid parameter`));
-        return;
+        return displayErrorParam(res, req.params.year);
     } else if (data.length < 1 || data == null) {
-        res.send(jsonMessage(`Unable to fetch data of races with the year: ${req.params.year}`))
-        return;
+        return displayNoData(res, req.params.year);
     }
 
     res.send(data);
 });
 
+/**
+ * Returns the data of a race from a given season (year) specified by round
+ */
 app.get('/api/races/season/:year/:round', async (req, res) => {
     const { data, error } = await supabase
         .from('races')
@@ -212,16 +254,17 @@ app.get('/api/races/season/:year/:round', async (req, res) => {
         .eq('round', req.params.round);
 
     if (error) {
-        res.send(jsonMessage(`Error fetching data: one of the parameters is not a valid type`));
-        return;
+        return displayErrorParam(res, req.params.year, req.params.round);
     } else if (data.length < 1 || data == null) {
-        res.send(jsonMessage(`Unable to fetch data containing round: ${req.params.round} from season ${req.params.year}`))
-        return;
+        return displayNoData(res, req.params.year, req.params.round);
     }
 
     res.send(data);
 });
 
+/**
+ * Returns the data of all the races for a specified circuit
+ */
 app.get('/api/races/circuits/:circuitRef', async (req, res) => {
     const { data, error } = await supabase
         .from('races')
@@ -230,16 +273,17 @@ app.get('/api/races/circuits/:circuitRef', async (req, res) => {
         .order('year');
 
     if (error) {
-        res.send(jsonMessage(`Error fetching data: ${req.params.circuitRef} is not a valid parameter`));
-        return;
+        return displayErrorParam(res, req.params.circuitRef);
     } else if (data.length < 1 || data == null) {
-        res.send(jsonMessage(`Unable to fetch data containing circuitRef: ${req.params.circuitRef}`))
-        return;
+        return displayNoData(res, req.params.circuitRef);
     }
 
     res.send(data);
 });
 
+/**
+ * Returns the data of all the races for a specified circuit between two years (inclusive)
+ */
 app.get('/api/races/circuits/:circuitRef/season/:yearStart/:yearEnd', async (req, res) => {
     const { data, error } = await supabase
         .from('races')
@@ -254,16 +298,17 @@ app.get('/api/races/circuits/:circuitRef/season/:yearStart/:yearEnd', async (req
     }
 
     if (error) {
-        res.send(jsonMessage(`Error fetching data: one of the parameters is not a valid type`));
-        return;
+        return displayErrorParam(res, req.params.circuitRef, req.params.yearStart, req.params.yearEnd);
     } else if (data.length < 1 || data == null) {
-        res.send(jsonMessage(`Unable to fetch data containing circuitRef: ${req.params.circuitRef} between the seasons ${req.params.yearStart} and ${req.params.yearEnd}`))
-        return;
+        return displayNoData(res, req.params.circuitRef, req.params.yearStart, req.params.yearEnd);
     }
 
     res.send(data);
 });
 
+/**
+ * Returns all the data from the results table for a specified race ordered by grid
+ */
 app.get('/api/results/:raceId', async (req, res) => {
     const { data, error } = await supabase
         .from('results')
@@ -278,16 +323,18 @@ app.get('/api/results/:raceId', async (req, res) => {
 
 
     if (error) {
-        res.send(jsonMessage(`Error fetching data: ${req.params.raceId} is not a valid parameter`));
-        return;
+        return displayErrorParam(res, req.params.raceId);
     } else if (data.length < 1 || data == null) {
-        res.send(jsonMessage(`Unable to fetch data containing raceId: ${req.params.raceId}`))
-        return;
+        return displayNoData(res, req.params.raceId);
+
     }
 
     res.send(data);
 });
 
+/**
+ * Returns all the data from the results table for a specified driver
+ */
 app.get('/api/results/driver/:driverRef', async (req, res) => {
     const { data, error } = await supabase
         .from('results')
@@ -295,16 +342,17 @@ app.get('/api/results/driver/:driverRef', async (req, res) => {
         .eq('drivers.driverRef', req.params.driverRef);
 
     if (error) {
-        res.send(jsonMessage(`Error fetching data: ${req.params.driverRef} is not a valid parameter`));
-        return;
+        return displayErrorParam(res, req.params.driverRef);
     } else if (data.length < 1 || data == null) {
-        res.send(jsonMessage(`Unable to fetch data containing driverRef ${req.params.driverRef}`))
-        return;
+        return displayNoData(res, req.params.driverRef);
     }
 
     res.send(data);
 });
 
+/**
+ * Returns all the data from the results table for a specified driver between two years (inclusive) 
+ */
 app.get('/api/results/driver/:driverRef/seasons/:yearStart/:yearEnd', async (req, res) => {
     const { data, error } = await supabase
         .from('results')
@@ -319,16 +367,17 @@ app.get('/api/results/driver/:driverRef/seasons/:yearStart/:yearEnd', async (req
     }
 
     if (error) {
-        res.send(jsonMessage(`Error fetching data: one of the parameters is not a valid type`));
-        return;
+        return displayErrorParam(res, req.params.driverRef, req.params.yearStart, req.params.yearEnd);
     } else if (data.length < 1 || data == null) {
-        res.send(jsonMessage(`Unable to fetch data containing driverRef: ${req.params.driverRef}, between seasons ${req.params.yearStart} and ${req.params.yearEnd}`));
-        return;
+        return displayNoData(res, req.params.driverRef, req.params.yearStart, req.params.yearEnd);
     }
 
     res.send(data);
 });
 
+/**
+ * Returns all the data from the qualifying table for a specified race ordered by position
+ */
 app.get('/api/qualifying/:raceId', async (req, res) => {
     const { data, error } = await supabase
         .from('qualifying')
@@ -340,16 +389,19 @@ app.get('/api/qualifying/:raceId', async (req, res) => {
         .order('position', { ascending: true });
 
     if (error) {
-        res.send(jsonMessage(`Error fetching data: one of the parameters is not a valid type`));
-        return;
+        return displayErrorParam(res, req.params.raceId);
+
     } else if (data.length < 1 || data == null) {
-        res.send(jsonMessage(`Unable to fetch data containing raceId: ${req.params.raceId}`))
-        return;
+        return displayNoData(res, req.params.raceId);
+
     }
 
     res.send(data);
 });
 
+/**
+ * Returns all the driver standings data from a specified race ordered by position
+ */
 app.get('/api/standings/:raceId/drivers', async (req, res) => {
     const { data, error } = await supabase
         .from('driverStandings')
@@ -360,16 +412,19 @@ app.get('/api/standings/:raceId/drivers', async (req, res) => {
         .order('position', { ascending: true })
 
     if (error) {
-        res.send(jsonMessage(`Error fetching data: ${req.params.raceId} is not a valid parameter`));
-        return;
+        return displayErrorParam(res, req.params.raceId);
+
     } else if (data.length < 1 || data == null) {
-        res.send(jsonMessage(`Unable to fetch data containing raceId: ${req.params.raceId}`))
-        return;
+        return displayNoData(res, req.params.raceId);
+
     }
 
     res.send(data);
 });
 
+/**
+ * Returns all the constructor standings data from a specified race ordered by position
+ */
 app.get('/api/standings/:raceId/constructors', async (req, res) => {
     const { data, error } = await supabase
         .from('constructorStandings')
@@ -380,11 +435,11 @@ app.get('/api/standings/:raceId/constructors', async (req, res) => {
         .order('position', { ascending: true })
 
     if (error) {
-        res.send(jsonMessage(`Error fetching data: ${req.params.raceId} is not a valid parameter`));
-        return;
+        return displayErrorParam(res, req.params.raceId);
+
     } else if (data.length < 1 || data == null) {
-        res.send(jsonMessage(`Unable to fetch data containing raceId: ${req.params.raceId}`))
-        return;
+        return displayNoData(res, req.params.raceId);
+
     }
 
     res.send(data);
@@ -428,4 +483,4 @@ app.listen(8080, () => {
     console.log('http://localhost:8080/api/standings/1120/drivers');
     console.log('http://localhost:8080/api/standings/1120/constructors');
     console.log('http://localhost:8080/api/standings/asds/constructors');
-});
+}); 
