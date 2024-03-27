@@ -1,8 +1,6 @@
 const express = require('express');
 const supa = require('@supabase/supabase-js');
 const app = express();
-const supaUrl = 'https://tnhjiogbryszverqyefr.supabase.co';
-const supaAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRuaGppb2dicnlzenZlcnF5ZWZyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDcxODU4NzYsImV4cCI6MjAyMjc2MTg3Nn0._ALr_YGrUwbVXM7IQ6q9TB8oTWRqa-fTopd7q63w3F8';
 
 const supabase = supa.createClient(supaUrl, supaAnonKey);
 
